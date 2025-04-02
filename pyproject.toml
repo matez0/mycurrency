@@ -1,0 +1,42 @@
+[project]
+name = "mycurrency"
+version = "1.0.0"
+description = "Web platform for calculating currency exchange rates"
+authors = [
+    {name = "Mate Zoltan",email = "mate.zoltan0@gmail.com"}
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.2"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+# Enable specific rules that enforce Black's style
+extend-select =[
+    "T100", # https://docs.astral.sh/ruff/rules/#flake8-debugger-t10
+    "T2", # https://docs.astral.sh/ruff/rules/#flake8-print-t20
+    "TD", # https://docs.astral.sh/ruff/rules/#flake8-todos-td
+    "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "I", # https://docs.astral.sh/ruff/rules/#isort-i
+    "N", # https://docs.astral.sh/ruff/rules/#pep8-naming-n
+]
+
+[tool.ruff.lint.isort]
+# Configure isort to match Black's import sorting
+known-first-party = ["mycurrency"]
+combine-as-imports = true
+force-sort-within-sections = true
