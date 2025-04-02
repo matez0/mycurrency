@@ -9,6 +9,9 @@ license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "django (>=5.2,<6.0)",
+    "djangorestframework (>=3.16.0,<4.0.0)",
+    "typing-extensions (>=4.13.0,<5.0.0)",
 ]
 
 [build-system]
@@ -20,6 +23,8 @@ package-mode = false
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.2"
+pytest = "^8.3.5"
+pytest-django = "^4.11.0"
 
 [tool.ruff]
 line-length = 120
@@ -37,6 +42,9 @@ extend-select =[
 
 [tool.ruff.lint.isort]
 # Configure isort to match Black's import sorting
-known-first-party = ["mycurrency"]
+known-first-party = ["mycurrency", "currencies"]
 combine-as-imports = true
 force-sort-within-sections = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "mycurrency.settings"

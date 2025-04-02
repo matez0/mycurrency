@@ -3,6 +3,10 @@
 
 # Web platform for calculating currency exchange rates
 
+## API endpoints
+
+- Retrieve currency exchange rates from a specific currency to all available currencies for a given time period.
+
 ## Testing
 
 Create the virtual environment:
@@ -12,4 +16,16 @@ python -m venv .venv
 pip install --upgrade pip setuptools
 pip install poetry
 poetry install
+```
+Run the tests:
+```
+pytest mycurrency
+```
+
+## Development
+
+Before committing, please check the code style and import layout:
+```
+ruff check --fix
+ruff format
 ```
