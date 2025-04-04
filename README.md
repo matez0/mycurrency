@@ -22,6 +22,17 @@ Run the tests:
 pytest mycurrency
 ```
 
+### Running the service
+
+For the first time or when the database models are changed, do the migrations:
+```
+python manage.py migrate
+```
+Run the service:
+```
+python manage.py runserver
+```
+
 ## Development
 
 Before committing, please check the code style and import layout:
@@ -29,3 +40,8 @@ Before committing, please check the code style and import layout:
 ruff check --fix
 ruff format
 ```
+For the first time or when the database models are changed, make the migration:
+```
+python manage.py makemigrations currencies
+```
+and commit the result.
