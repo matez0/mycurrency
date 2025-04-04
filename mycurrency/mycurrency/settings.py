@@ -98,3 +98,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
 }
+
+CURRENCY_EXCHANGE_RATE_PRECISION = 6
+CURRENCY_AMOUNT_PRECISION = 2

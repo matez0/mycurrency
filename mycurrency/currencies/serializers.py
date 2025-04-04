@@ -1,5 +1,6 @@
 from collections.abc import Generator, Iterable
 
+from django.conf import settings
 from rest_framework import serializers
 
 from currencies.models import CurrencyExchangeRate
@@ -45,3 +46,13 @@ class CurrencyRatesResponseSerializer(serializers.Serializer):
 
         if exchange_rates:
             yield {"date": last_date, "from_currency": from_currency, "rates": exchange_rates}
+
+
+class CurrencyConvertRequestSerializer(serializers.Serializer):
+    from_currency = serializers.CharField(max_length=3)
+    to_currency = serializers.CharField(max_length=3)
+    amount = serializers.DecimalField(decimal_places=settings.CURRENCY_AMOUNT_PRECISION, max_digits=18, min_value=0)
+
+
+class CurrencyConvertResponseSerializer(CurrencyConvertRequestSerializer):
+    rate = serializers.DecimalField(decimal_places=settings.CURRENCY_EXCHANGE_RATE_PRECISION, max_digits=18)

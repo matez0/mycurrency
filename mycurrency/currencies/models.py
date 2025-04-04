@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -10,4 +11,4 @@ class CurrencyExchangeRate(models.Model):
     from_currency = models.ForeignKey(Currency, related_name="exchanges", on_delete=models.CASCADE)
     to_currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     date = models.DateField(db_index=True)
-    rate = models.DecimalField(db_index=True, decimal_places=6, max_digits=18)
+    rate = models.DecimalField(db_index=True, decimal_places=settings.CURRENCY_EXCHANGE_RATE_PRECISION, max_digits=18)

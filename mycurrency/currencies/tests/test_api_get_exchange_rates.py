@@ -3,24 +3,11 @@ from datetime import date
 import pytest
 from rest_framework import status
 
-from currencies.models import Currency, CurrencyExchangeRate
+from currencies.models import CurrencyExchangeRate
 
 pytestmark = pytest.mark.django_db
 
 URL = "/currencies/rates/"
-
-
-@pytest.fixture(autouse=True)
-def currency():
-    return {
-        code: Currency.objects.create(code=code, name=name)
-        for code, name in [
-            ("EUR", "Euro"),
-            ("USD", "United States Dollar"),
-            ("CHF", "Swiss Franc"),
-            ("GBP", "British Pound"),
-        ]
-    }
 
 
 @pytest.fixture

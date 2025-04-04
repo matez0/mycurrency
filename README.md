@@ -6,6 +6,7 @@
 ## API endpoints
 
 - Retrieve currency exchange rates from a specific currency to all available currencies for a given time period.
+- Convert an amount from one currency to another.
 
 ## Testing
 
