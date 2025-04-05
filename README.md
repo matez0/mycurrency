@@ -7,6 +7,7 @@
 
 - Retrieve currency exchange rates from a specific currency to all available currencies for a given time period.
 - Convert an amount from one currency to another.
+- CRUD operations (list, create, retrieve, update, partial_update, destroy) for currencies.
 
 ## Testing
 

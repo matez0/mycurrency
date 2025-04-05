@@ -3,7 +3,7 @@ from collections.abc import Generator, Iterable
 from django.conf import settings
 from rest_framework import serializers
 
-from currencies.models import CurrencyExchangeRate
+from currencies.models import Currency, CurrencyExchangeRate
 
 
 class CurrencyRatesRequestSerializer(serializers.Serializer):
@@ -56,3 +56,9 @@ class CurrencyConvertRequestSerializer(serializers.Serializer):
 
 class CurrencyConvertResponseSerializer(CurrencyConvertRequestSerializer):
     rate = serializers.DecimalField(decimal_places=settings.CURRENCY_EXCHANGE_RATE_PRECISION, max_digits=18)
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Currency
+        fields = "__all__"

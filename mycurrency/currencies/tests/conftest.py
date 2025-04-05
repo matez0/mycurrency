@@ -1,6 +1,13 @@
 import pytest
+from rest_framework.test import APIClient
 
 from currencies.models import Currency
+
+
+# Override the client fixture of django-pytest with the one of DRF:
+@pytest.fixture
+def client():
+    return APIClient()
 
 
 @pytest.fixture(autouse=True)

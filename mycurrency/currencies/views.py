@@ -1,5 +1,5 @@
 from django.conf import settings
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -9,6 +9,7 @@ from currencies.serializers import (
     CurrencyConvertResponseSerializer,
     CurrencyRatesRequestSerializer,
     CurrencyRatesResponseSerializer,
+    CurrencySerializer,
 )
 
 
@@ -78,3 +79,8 @@ def convert_amount(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(result.data)
+
+
+class CurrencyViewSet(viewsets.ModelViewSet):
+    queryset = Currency.objects.all().order_by("code")
+    serializer_class = CurrencySerializer
