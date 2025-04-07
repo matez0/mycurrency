@@ -12,12 +12,18 @@ class CurrencyRatesRequestSerializer(serializers.Serializer):
     from_currency = serializers.CharField(max_length=3)
 
 
+class OrderByToCurrencyCodeSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        return super().to_representation(sorted(data, key=lambda item: item.to_currency.code))
+
+
 class CurrencyExchangeRateSerializer(serializers.ModelSerializer):
     to_currency = serializers.SlugRelatedField(read_only=True, slug_field="code")
 
     class Meta:
         model = CurrencyExchangeRate
         fields = ("to_currency", "rate")
+        list_serializer_class = OrderByToCurrencyCodeSerializer
 
 
 class CurrencyRatesResponseSerializer(serializers.Serializer):

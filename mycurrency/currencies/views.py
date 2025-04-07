@@ -3,6 +3,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from currencies.exchange_rate_provider import provide_exchange_rates
 from currencies.models import Currency, CurrencyExchangeRate
 from currencies.serializers import (
     CurrencyConvertRequestSerializer,
@@ -30,10 +31,7 @@ def get_exchange_rates(request):
     except Currency.DoesNotExist:
         return Response({"error": "Invalid currency."}, status=status.HTTP_400_BAD_REQUEST)
 
-    exchange_rates_by_date = CurrencyExchangeRate.objects.filter(
-        date__range=(from_date, to_date),
-        from_currency=from_currency,
-    ).order_by("date", "to_currency__code")
+    exchange_rates_by_date = provide_exchange_rates(from_currency, from_date, to_date)
 
     return Response(
         CurrencyRatesResponseSerializer(

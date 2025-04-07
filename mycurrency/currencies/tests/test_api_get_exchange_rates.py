@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 import pytest
 from rest_framework import status
@@ -32,10 +33,18 @@ def exchange_rates(currency):
         )
 
 
-def test_success(client, exchange_rates):
+def test_success(client, exchange_rates, currency):
     parameters = {"from_date": "2023-10-26", "to_date": "2023-10-27", "from_currency": "EUR"}
 
-    response = client.get(URL, parameters)
+    with patch("currencies.exchange_rate_provider.ProviderHandler", spec_set=True) as provider_handler:
+        provider_handler.return_value.side_effect = lambda from_currency, to_currency, date: CurrencyExchangeRate(
+            date=date,
+            from_currency=from_currency,
+            to_currency=to_currency,
+            rate=12.34,
+        )
+
+        response = client.get(URL, parameters)
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 2
@@ -43,12 +52,20 @@ def test_success(client, exchange_rates):
         {
             "date": "2023-10-26",
             "from_currency": "EUR",
-            "rates": [{"to_currency": "GBP", "rate": "0.870000"}, {"to_currency": "USD", "rate": "0.950000"}],
+            "rates": [
+                {"to_currency": "CHF", "rate": "12.340000"},
+                {"to_currency": "GBP", "rate": "0.870000"},
+                {"to_currency": "USD", "rate": "0.950000"},
+            ],
         },
         {
             "date": "2023-10-27",
             "from_currency": "EUR",
-            "rates": [{"to_currency": "GBP", "rate": "0.880000"}, {"to_currency": "USD", "rate": "0.960000"}],
+            "rates": [
+                {"to_currency": "CHF", "rate": "12.340000"},
+                {"to_currency": "GBP", "rate": "0.880000"},
+                {"to_currency": "USD", "rate": "0.960000"},
+            ],
         },
     ]
 
@@ -56,7 +73,8 @@ def test_success(client, exchange_rates):
 def test_no_data_in_requested_interval(client):
     parameters = {"from_date": "2023-10-28", "to_date": "2023-10-29", "from_currency": "EUR"}
 
-    response = client.get(URL, parameters)
+    with patch("currencies.exchange_rate_provider.ProviderHandler", spec_set=True, return_value=None):
+        response = client.get(URL, parameters)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == []
