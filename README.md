@@ -77,3 +77,31 @@ For the first time or when the database models are changed, make the migration:
 python manage.py makemigrations currencies
 ```
 and commit the result.
+
+## Todo:
+
+- Defect: Handle decimal errors during conversion. Large amounts can lead to `decimal.InvalidOperation`.
+
+- Defect: If exchange rate time series requests include today's date,
+existing database entries for today are not updated.
+
+- Use async DRF views and async queries and async HTTP requests in provider plugins.
+
+- Configure the service with environment variables.
+
+- Querying a date range of currency exchange rates may affect many database items.
+Check how to optimize the Django query for that (prefech rate).
+
+- Validation of the return value of the provider plugins.
+Do not repeat the decimal conversion definition (serializer, model, instantiation).
+
+- Make the provider plugin run more isolated while keeping the efficiency.
+
+- If the provider plugins are developed by other teams, a sanity check would be useful.
+
+- Refine database constraints like uniqueness (fields of `CurrencyExchangeRate`)
+and valid data (upper case currency code, provider module name, ...).
+
+- Containerization: python packaging and environment configuration.
+
+- Setup `mypy` and fix type hint issues.
