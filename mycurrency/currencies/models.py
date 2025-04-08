@@ -12,3 +12,8 @@ class CurrencyExchangeRate(models.Model):
     to_currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     date = models.DateField(db_index=True)
     rate = models.DecimalField(db_index=True, decimal_places=settings.CURRENCY_EXCHANGE_RATE_PRECISION, max_digits=18)
+
+
+class Provider(models.Model):
+    name = models.CharField(max_length=20, db_index=True, unique=True)
+    priority = models.PositiveIntegerField()

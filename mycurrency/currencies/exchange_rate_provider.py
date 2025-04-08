@@ -1,18 +1,46 @@
 from collections.abc import Generator, Sequence
 from datetime import date, timedelta
+from decimal import Decimal
+from importlib import import_module, reload
+import logging
 
+from django.conf import settings
 from django.db import transaction
 
-from currencies.models import Currency, CurrencyExchangeRate
+from currencies.models import Currency, CurrencyExchangeRate, Provider
 
 TIME_RESOLUTION = timedelta(days=1)
+logger = logging.getLogger(__file__)
 
 
 class ProviderHandler:
     """Fetches a currency exchange rate from the highest priority available provider."""
 
+    def __init__(self):
+        self.providers = {
+            provider.name: self._import_provider(provider.name).Provider()
+            for provider in Provider.objects.order_by("priority")
+        }
+
+    @staticmethod
+    def _import_provider(name):
+        return reload(import_module(f"{settings.PROVIDERS_PKG}.{name}"))
+
     def __call__(self, from_currency, to_currency, date) -> CurrencyExchangeRate | None:
-        pass
+        for name, provider in self.providers.items():
+            try:
+                rate = provider.get_exchange_rate_data(from_currency.code, to_currency.code, date)
+            except Exception:
+                logger.exception("Error getting exchange rate data from provider; name=%s", name)
+                continue
+
+            if rate:
+                return CurrencyExchangeRate(
+                    date=date,
+                    from_currency=from_currency,
+                    to_currency=to_currency,
+                    rate=round(Decimal(str(rate)), settings.CURRENCY_EXCHANGE_RATE_PRECISION),
+                )
 
 
 class ExchangeRateLoader:

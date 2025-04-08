@@ -3,6 +3,12 @@
 
 # Web platform for calculating currency exchange rates
 
+The platform uses currency exchange rates from pluggable external services,
+storing them in its database for provision.
+
+Data provider external services are prioritized, and the data from the available service
+with the highest priority is selected for use.
+
 ## API endpoints
 
 - Retrieve currency exchange rates from a specific currency to all available currencies for a given time period.
