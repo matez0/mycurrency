@@ -3,8 +3,8 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from currencies.exchange_rate_provider import provide_exchange_rates
-from currencies.models import Currency, CurrencyExchangeRate
+from currencies.exchange_rate_provider import provide_exchange_rates, provide_latest_exchange_rate
+from currencies.models import Currency
 from currencies.serializers import (
     CurrencyConvertRequestSerializer,
     CurrencyConvertResponseSerializer,
@@ -59,10 +59,10 @@ def convert_amount(request):
     except Currency.DoesNotExist:
         return Response({"error": "Invalid currency."}, status=status.HTTP_400_BAD_REQUEST)
 
-    exchange_rate = CurrencyExchangeRate.objects.filter(
-        from_currency=from_currency,
-        to_currency=to_currency,
-    ).latest("date")
+    exchange_rate = provide_latest_exchange_rate(from_currency, to_currency)
+
+    if not exchange_rate:
+        return Response({"error": "No available data."}, status=status.HTTP_404_NOT_FOUND)
 
     result = CurrencyConvertResponseSerializer(
         data={

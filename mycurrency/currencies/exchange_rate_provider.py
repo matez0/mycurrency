@@ -129,3 +129,28 @@ def provide_exchange_rates(
 
         if last_date < to_date:  # load the missing dates in the end
             yield from load_exchange_rates(from_currency, last_date + TIME_RESOLUTION, to_date, all_to_currencies)
+
+
+def provide_latest_exchange_rate(from_currency: Currency, to_currency: Currency) -> CurrencyExchangeRate | None:
+    current_date = date.today()
+
+    exchange_rate = ProviderHandler()(from_currency, to_currency, current_date)
+
+    try:
+        stored_exchange_rate = CurrencyExchangeRate.objects.get(
+            from_currency=from_currency,
+            to_currency=to_currency,
+            date=current_date,
+        )
+    except CurrencyExchangeRate.DoesNotExist:
+        if exchange_rate:
+            exchange_rate.save()
+
+        return exchange_rate
+
+    else:
+        if exchange_rate and stored_exchange_rate.rate != exchange_rate.rate:
+            stored_exchange_rate.rate = exchange_rate.rate
+            stored_exchange_rate.save()
+
+        return stored_exchange_rate
