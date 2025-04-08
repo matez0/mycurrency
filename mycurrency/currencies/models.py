@@ -17,3 +17,4 @@ class CurrencyExchangeRate(models.Model):
 class Provider(models.Model):
     name = models.CharField(max_length=20, db_index=True, unique=True)
     priority = models.PositiveIntegerField()
+    active = models.BooleanField(default=True)

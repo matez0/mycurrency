@@ -17,6 +17,8 @@ with the highest priority is selected for use.
 
 ## Data provider plugins
 
+Plugins of external services can be activated or deactivated in the admin panel.
+
 - [CurrencyBeacon](https://currencybeacon.com/api-documentation) [[source]](mycurrency/providers/CurrencyBeacon/__init__.py):
 
 Using the plugin requires the `CURRENCY_BEACON_API_KEY` environment variable, e.g.:
@@ -48,6 +50,11 @@ python manage.py migrate
 Run the service:
 ```
 python manage.py runserver
+```
+
+To log in to the admin panel, ensure you have a superuser account created:
+```
+python manage.py createsuperuser
 ```
 
 ## Development

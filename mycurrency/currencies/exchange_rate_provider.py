@@ -19,7 +19,7 @@ class ProviderHandler:
     def __init__(self):
         self.providers = {
             provider.name: self._import_provider(provider.name).Provider()
-            for provider in Provider.objects.order_by("priority")
+            for provider in Provider.objects.filter(active=True).order_by("priority")
         }
 
     @staticmethod

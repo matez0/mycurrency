@@ -13,7 +13,12 @@ pytestmark = pytest.mark.django_db
 
 
 @contextmanager
-def provider_plugin(priority: int = 1, exchange_rate: Decimal | None = Decimal("12.123456"), extra_code: str = ""):
+def provider_plugin(
+    priority: int = 1,
+    exchange_rate: Decimal | None = Decimal("12.123456"),
+    extra_code: str = "",
+    active: bool = True,
+):
     plugin_code = f"""
 class Provider:
     def get_exchange_rate_data(self, from_currency, to_currency, date):
@@ -29,7 +34,7 @@ class Provider:
         with open(plugin_path / "__init__.py", "w+") as plugin_file:
             plugin_file.write(plugin_code)
 
-        plugin = Provider.objects.create(name=plugin_name, priority=priority)
+        plugin = Provider.objects.create(name=plugin_name, priority=priority, active=active)
 
         yield {"exchange_rate": exchange_rate}
 
@@ -99,6 +104,18 @@ def test_next_provider_shall_be_called_in_priority_order_when_provider_raises_ex
     with (
         provider_plugin(priority=1, extra_code="raise Exception"),
         provider_plugin(priority=2) as provider,
+    ):
+        result = provider_handler_call()
+
+        assert isinstance(result, CurrencyExchangeRate)
+        assert result.rate == provider["exchange_rate"]
+
+
+def test_highest_priority_active_provider_shall_be_called(provider_handler_call):
+    with (
+        provider_plugin(priority=5, exchange_rate=123),
+        provider_plugin(priority=1, exchange_rate=456, active=False),
+        provider_plugin(priority=3, exchange_rate=789) as provider,
     ):
         result = provider_handler_call()
 
