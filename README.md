@@ -15,6 +15,15 @@ with the highest priority is selected for use.
 - Convert an amount from one currency to another.
 - CRUD operations (list, create, retrieve, update, partial_update, destroy) for currencies.
 
+## Data provider plugins
+
+- [CurrencyBeacon](https://currencybeacon.com/api-documentation) [[source]](mycurrency/providers/CurrencyBeacon/__init__.py):
+
+Using the plugin requires the `CURRENCY_BEACON_API_KEY` environment variable, e.g.:
+```
+CURRENCY_BEACON_API_KEY=xxxxxxxxxxxxxxxx pytest currencies/tests/test_integration_currency_beacon.py
+```
+
 ## Testing
 
 Create the virtual environment:
