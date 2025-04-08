@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backoffice Converter</title>
+</head>
+<body>
+    <h2>Convert amount between currencies</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div style="color: red;">
+                Please correct the errors below:
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        <li><strong>{{ field }}</strong>: {{ errors }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div style="line-height: 2; font-size: 1.2em;">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit"
+            style="background-color: YellowGreen; font-size: 1.5em; font-weight: bold;">Convert</button>
+    </form>
+
+    {% if converted_amount %}
+        <div>
+            <label style="font-size: 1.2em;">Exchange rate:</label>
+            <input type="text" value="{{ exchange_rate }}" style="font-size: 1.2em;" readonly>
+        </div>
+        <div>
+            <label style="font-size: 1.2em; font-weight: bold;">Converted amount:</label>
+            <input type="text"
+                value="{{ converted_amount }}"
+                style="font-size: 1.2em; background-color: WhiteSmoke" readonly>
+        </div>
+
+    {% elif error_message %}
+        <div style="color: red;">
+            <h3>Error:</h3>
+            <p>{{ error_message }}</p>
+        </div>
+    {% endif %}
+
+</body>
+</html>

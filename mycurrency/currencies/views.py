@@ -1,9 +1,15 @@
-from django.conf import settings
+from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from currencies.exchange_rate_provider import provide_exchange_rates, provide_latest_exchange_rate
+from currencies.currency_converter import (
+    CurrencyConverterError,
+    CurrencyExchangeRateNotAvailableError,
+    convert_with_latest_exchange_rate,
+)
+from currencies.exchange_rate_provider import provide_exchange_rates
+from currencies.forms import ConvertAmountForm
 from currencies.models import Currency
 from currencies.serializers import (
     CurrencyConvertRequestSerializer,
@@ -50,26 +56,26 @@ def convert_amount(request):
 
     from_currency_code = serializer.validated_data["from_currency"]
     to_currency_code = serializer.validated_data["to_currency"]
-    amount = serializer.validated_data["amount"]
 
     try:
-        from_currency = Currency.objects.get(code=from_currency_code)
-        to_currency = Currency.objects.get(code=to_currency_code)
+        converted_amount, exchange_rate = convert_with_latest_exchange_rate(
+            serializer.validated_data["amount"],
+            from_currency_code,
+            to_currency_code,
+        )
 
-    except Currency.DoesNotExist:
-        return Response({"error": "Invalid currency."}, status=status.HTTP_400_BAD_REQUEST)
+    except CurrencyExchangeRateNotAvailableError as exc:
+        return Response({"error": str(exc)}, status=status.HTTP_404_NOT_FOUND)
 
-    exchange_rate = provide_latest_exchange_rate(from_currency, to_currency)
-
-    if not exchange_rate:
-        return Response({"error": "No available data."}, status=status.HTTP_404_NOT_FOUND)
+    except CurrencyConverterError as exc:
+        return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
     result = CurrencyConvertResponseSerializer(
         data={
             "from_currency": from_currency_code,
             "to_currency": to_currency_code,
-            "rate": exchange_rate.rate,
-            "amount": round(amount * exchange_rate.rate, settings.CURRENCY_AMOUNT_PRECISION),
+            "rate": exchange_rate,
+            "amount": converted_amount,
         }
     )
 
@@ -82,3 +88,31 @@ def convert_amount(request):
 class CurrencyViewSet(viewsets.ModelViewSet):
     queryset = Currency.objects.all().order_by("code")
     serializer_class = CurrencySerializer
+
+
+def backoffice_converter_view(request):
+    context = {
+        "form": None,
+        "converted_amount": None,
+        "error_message": None,
+        "exchange_rate": None,
+    }
+
+    if request.method == "POST":
+        form = context["form"] = ConvertAmountForm(request.POST)
+
+        if form.is_valid():
+            try:
+                context["converted_amount"], context["exchange_rate"] = convert_with_latest_exchange_rate(
+                    form.cleaned_data["amount"],
+                    form.cleaned_data["from_currency"],
+                    form.cleaned_data["to_currency"],
+                )
+
+            except CurrencyConverterError as exc:
+                context["error_message"] = str(exc)
+
+    else:
+        context["form"] = ConvertAmountForm()
+
+    return render(request, "backoffice_converter_page.html", context)

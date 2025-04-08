@@ -41,7 +41,7 @@ ROOT_URLCONF = "mycurrency.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "currencies" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

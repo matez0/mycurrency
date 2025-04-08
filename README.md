@@ -28,6 +28,12 @@ Using the plugin requires the `CURRENCY_BEACON_API_KEY` environment variable, e.
 CURRENCY_BEACON_API_KEY=xxxxxxxxxxxxxxxx pytest currencies/tests/test_integration_currency_beacon.py
 ```
 
+## Online currency converter
+
+The site enables the conversion of a given amount between the given currencies using the last available exchange rate.
+
+It is also accessible from the admin panel.
+
 ## Testing
 
 Create the virtual environment:
