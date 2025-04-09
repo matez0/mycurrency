@@ -21,6 +21,16 @@ The supported currencies can be managed in the admin panel.
 
 Plugins of external services can be activated or deactivated in the admin panel.
 
+They are implemented as python packages in [`mycurrency/providers`](mycurrency/providers) directory.
+A package needs to implement the class:
+```python
+class Provider:
+    def get_exchange_rate_data(self, from_currency: str, to_currency: str, date: datetime.date) -> "NumberRepr":
+        ...
+```
+
+The following plugins are implemented:
+
 - [CurrencyBeacon](https://currencybeacon.com/api-documentation) [[source]](mycurrency/providers/CurrencyBeacon/__init__.py):
 
 Using the plugin requires the `CURRENCY_BEACON_API_KEY` environment variable, e.g.:
