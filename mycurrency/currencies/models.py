@@ -13,6 +13,11 @@ class CurrencyExchangeRate(models.Model):
     date = models.DateField(db_index=True)
     rate = models.DecimalField(db_index=True, decimal_places=settings.CURRENCY_EXCHANGE_RATE_PRECISION, max_digits=18)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["from_currency", "to_currency", "date"], name="unique_rate_per_date")
+        ]
+
 
 class Provider(models.Model):
     name = models.CharField(max_length=20, db_index=True, unique=True)
