@@ -34,6 +34,14 @@ The site enables the conversion of a given amount between the given currencies u
 
 It is also accessible from the admin panel.
 
+## Django management command - loading historical data
+
+The command loads all currency exchange rates for a given date, e.g.:
+```
+CURRENCY_BEACON_API_KEY=xxxxxxxxxxxxxxxx python manage.py load_historical_data 2015-10-21
+```
+It can be launched from a `cron` job.
+
 ## Testing
 
 Create the virtual environment:
